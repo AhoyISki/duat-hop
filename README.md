@@ -18,6 +18,12 @@ Just like other Duat plugins, this one can be installed by calling
 cargo add duat-hop@"*" --rename hop
 ```
 
+Or, if you are using a `--git-deps` version of duat, do this:
+
+```bash
+cargo add --git https://github.com/AhoyISki/duat-hop --rename hop
+```
+
 ## Usage
 
 In order to make use of it, just add the following to your `setup`
@@ -66,7 +72,7 @@ fn setup() {
 ```
 
 
- [__cargo_doc2readme_dependencies_info]: ggGkYW0BYXSEG0NWJwoPKLNnG0TAj5IG93PSG7YmxsASqSxYGzkEnHTUwH4sYXKEG8Ork8UsEunVG10b8XOUE4_0G39SETzS8DVdG1hUsh1A52CfYWSCg2hkdWF0LWhvcGUwLjEuMGhkdWF0X2hvcIJpZHVhdF9jb3JlZTAuNS4z
+ [__cargo_doc2readme_dependencies_info]: ggGkYW0BYXSEG0NWJwoPKLNnG0TAj5IG93PSG7YmxsASqSxYGzkEnHTUwH4sYXKEG4N8F-oCNeNzG1elciKR3H-MG7sGSbqc2DpLG3CnTB08Xuf-YWSCg2hkdWF0LWhvcGUwLjEuMGhkdWF0X2hvcIJpZHVhdF9jb3JlZTAuNS4z
  [__link0]: https://docs.rs/duat_core/0.5.3/duat_core/?search=mode::Mode
  [__link1]: https://github.com/smoka7/hop.nvim
  [__link2]: https://docs.rs/duat-hop/0.1.0/duat_hop/?search=Hopper::word

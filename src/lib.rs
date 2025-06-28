@@ -14,6 +14,12 @@
 //! cargo add duat-hop@"*" --rename hop
 //! ```
 //!
+//! Or, if you are using a `--git-deps` version of duat, do this:
+//!
+//! ```bash
+//! cargo add --git https://github.com/AhoyISki/duat-hop --rename hop
+//! ```
+//!
 //! # Usage
 //!
 //! In order to make use of it, just add the following to your `setup`
