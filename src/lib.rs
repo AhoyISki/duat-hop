@@ -43,7 +43,7 @@
 //!
 //! # Forms
 //!
-//! When plugging [`Hop`] this crate set the `"hop"` [`Form`] to
+//! When plugging [`Hop`] will set the `"hop"` [`Form`] to
 //! `"accent.info"`. This is then inherited by the following
 //! [`Form`]s:
 //!
@@ -67,7 +67,7 @@
 //!
 //!     form::set("hop.one_char", Form::red().underlined());
 //!     form::set("hop.char1", "hop.one_char");
-//!     form::set("hop.char2", "search
+//!     form::set("hop.char2", "search");
 //! }
 //! ```
 //!
@@ -129,6 +129,9 @@ impl<U: Ui> Mode<U> for Hopper {
             let cfg = file.print_cfg();
             let text = file.text_mut();
 
+            let id = form::id_of!("cloak");
+            text.insert_tag(*CLOAK_TAGGER, .., id.to_tag(101));
+
             let (start, _) = handle.area().start_points(text, cfg);
             let (end, _) = handle.area().end_points(text, cfg);
 
@@ -138,11 +141,11 @@ impl<U: Ui> Mode<U> for Hopper {
 
             for (seq, [p0, p1]) in seqs.iter().zip(&self.points) {
                 let ghost = if seq.len() == 1 {
-                    Ghost(txt!("[hop.one_char]{seq}"))
+                    Ghost(txt!("[hop.one_char:102]{seq}"))
                 } else {
                     let mut chars = seq.chars();
                     Ghost(txt!(
-                        "[hop.char1]{}[hop.char2]{}",
+                        "[hop.char1:102]{}[hop.char2:102]{}",
                         chars.next().unwrap(),
                         chars.next().unwrap()
                     ))
@@ -196,7 +199,7 @@ impl<U: Ui> Mode<U> for Hopper {
     }
 
     fn before_exit(&mut self, pa: &mut Pass, handle: Handle<Self::Widget, U>) {
-        handle.write_text(pa, |text| text.remove_tags(*TAGGER, ..))
+        handle.write_text(pa, |text| text.remove_tags([*TAGGER, *CLOAK_TAGGER], ..))
     }
 }
 
@@ -213,3 +216,4 @@ fn key_seqs(len: usize) -> Vec<String> {
 
 static LETTERS: &str = "abcdefghijklmnopqrstuvwxyz";
 static TAGGER: LazyLock<Tagger> = Tagger::new_static();
+static CLOAK_TAGGER: LazyLock<Tagger> = Tagger::new_static();
