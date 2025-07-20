@@ -158,7 +158,7 @@ impl<U: Ui> Mode<U> for Hopper {
                 {
                     p1.byte()
                 } else {
-                    let chars = text.strs(*p0..).chars().map(|c| c.len_utf8());
+                    let chars = text.strs(*p0..).unwrap().chars().map(|c| c.len_utf8());
                     p0.byte() + chars.take(seq.len()).sum::<usize>()
                 };
 
