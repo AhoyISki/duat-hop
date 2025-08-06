@@ -125,46 +125,46 @@ impl<U: Ui> Mode<U> for Hopper {
     type Widget = File<U>;
 
     fn on_switch(&mut self, pa: &mut Pass, handle: Handle<File<U>, U>) {
-        handle.write(pa, |file, _| {
-            let cfg = file.print_cfg();
-            let text = file.text_mut();
+        let (file, area) = handle.write_with_area(pa);
 
-            let id = form::id_of!("cloak");
-            text.insert_tag(*CLOAK_TAGGER, .., id.to_tag(101));
+        let cfg = file.print_cfg();
+        let text = file.text_mut();
 
-            let (start, _) = handle.area().start_points(text, cfg);
-            let (end, _) = handle.area().end_points(text, cfg);
+        let id = form::id_of!("cloak");
+        text.insert_tag(*CLOAK_TAGGER, .., id.to_tag(101));
 
-            self.points = text.search_fwd(self.regex, start..end).unwrap().collect();
+        let (start, _) = area.start_points(text, cfg);
+        let (end, _) = area.end_points(text, cfg);
 
-            let seqs = key_seqs(self.points.len());
+        self.points = text.search_fwd(self.regex, start..end).unwrap().collect();
 
-            for (seq, [p0, p1]) in seqs.iter().zip(&self.points) {
-                let ghost = if seq.len() == 1 {
-                    Ghost(txt!("[hop.one_char:102]{seq}"))
-                } else {
-                    let mut chars = seq.chars();
-                    Ghost(txt!(
-                        "[hop.char1:102]{}[hop.char2:102]{}",
-                        chars.next().unwrap(),
-                        chars.next().unwrap()
-                    ))
-                };
+        let seqs = key_seqs(self.points.len());
 
-                text.insert_tag(*TAGGER, *p0, ghost);
+        for (seq, [p0, p1]) in seqs.iter().zip(&self.points) {
+            let ghost = if seq.len() == 1 {
+                Ghost(txt!("[hop.one_char:102]{seq}"))
+            } else {
+                let mut chars = seq.chars();
+                Ghost(txt!(
+                    "[hop.char1:102]{}[hop.char2:102]{}",
+                    chars.next().unwrap(),
+                    chars.next().unwrap()
+                ))
+            };
 
-                let seq_end = if p1.byte() == p0.byte() + 1
-                    && let Some('\n') = text.char_at(*p1)
-                {
-                    p1.byte()
-                } else {
-                    let chars = text.strs(*p0..).unwrap().chars().map(|c| c.len_utf8());
-                    p0.byte() + chars.take(seq.len()).sum::<usize>()
-                };
+            text.insert_tag(*TAGGER, *p0, ghost);
 
-                text.insert_tag(*TAGGER, p0.byte()..seq_end, Conceal);
-            }
-        });
+            let seq_end = if p1.byte() == p0.byte() + 1
+                && let Some('\n') = text.char_at(*p1)
+            {
+                p1.byte()
+            } else {
+                let chars = text.strs(*p0..).unwrap().chars().map(|c| c.len_utf8());
+                p0.byte() + chars.take(seq.len()).sum::<usize>()
+            };
+
+            text.insert_tag(*TAGGER, p0.byte()..seq_end, Conceal);
+        }
     }
 
     fn send_key(&mut self, pa: &mut Pass, key: KeyEvent, handle: Handle<File<U>, U>) {
@@ -179,7 +179,7 @@ impl<U: Ui> Mode<U> for Hopper {
 
         self.seq.push(char);
 
-        handle.write_selections(pa, |c| c.remove_extras());
+        handle.write(pa).selections_mut().remove_extras();
 
         let seqs = key_seqs(self.points.len());
         for (seq, &[p0, p1]) in seqs.iter().zip(&self.points) {
@@ -190,7 +190,7 @@ impl<U: Ui> Mode<U> for Hopper {
                 continue;
             }
             // Removing one end of the conceal range will remove both ends.
-            handle.write_text(pa, |text| text.remove_tags(*TAGGER, p0.byte()));
+            handle.write(pa).text_mut().remove_tags(*TAGGER, p0.byte());
         }
 
         if self.seq.chars().count() == 2 || !LETTERS.contains(char) {
@@ -199,7 +199,10 @@ impl<U: Ui> Mode<U> for Hopper {
     }
 
     fn before_exit(&mut self, pa: &mut Pass, handle: Handle<Self::Widget, U>) {
-        handle.write_text(pa, |text| text.remove_tags([*TAGGER, *CLOAK_TAGGER], ..))
+        handle
+            .write(pa)
+            .text_mut()
+            .remove_tags([*TAGGER, *CLOAK_TAGGER], ..)
     }
 }
 
