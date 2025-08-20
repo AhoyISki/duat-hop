@@ -30,6 +30,7 @@ In order to make use of it, just add the following to your `setup`
 function:
 
 ```rust
+# use duat_core::doc_duat as duat;
 setup_duat!(setup);
 use duat::prelude::*;
 use hop::*;
