@@ -50,8 +50,8 @@
 //! - `"hop.one_char"` will be used on labels with just one character.
 //! - `"hop.char1"` will be used on the first character of two
 //!   character labels.
-//! - `"hop.char2"` will be used on the secondcharacter of two
-//!   character labels.
+//! - `"hop.char2"` will be used on the second character of two
+//!   character labels. By default, this form inherits `"hop.char1"`.
 //!
 //! Which you can modify via [`form::set`]:
 //!
@@ -89,6 +89,7 @@ impl<U: Ui> Plugin<U> for Hop {
         mode::map::<mode::User, U>("l", Hopper::line());
 
         form::set_weak("hop", "accent.info");
+        form::set_weak("hop.char2", "hop.char1");
     }
 }
 
