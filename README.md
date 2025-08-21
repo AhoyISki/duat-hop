@@ -1,6 +1,6 @@
 # duat-hop ![License: AGPL-3.0-or-later](https://img.shields.io/badge/license-AGPL--3.0--or--later-blue) [![duat-hop on crates.io](https://img.shields.io/crates/v/duat-hop)](https://crates.io/crates/duat-hop) [![duat-hop on docs.rs](https://docs.rs/duat-hop/badge.svg)](https://docs.rs/duat-hop) [![Source Code Repository](https://img.shields.io/badge/Code-On%20GitHub-blue?logo=GitHub)](https://github.com/AhoyISki/duat-hop)
 
-![hop demonstration](./assets/hop-demonstration.gif)
+![](./assets/hop-demo.gif)
 
 A duat [`Mode`][__link0] to quickly move around the screen, inspired by
 [`hop.nvim`][__link1]
@@ -72,7 +72,7 @@ fn setup() {
 ```
 
 
- [__cargo_doc2readme_dependencies_info]: ggGkYW0BYXSEG0NWJwoPKLNnG0TAj5IG93PSG7YmxsASqSxYGzkEnHTUwH4sYXKEG6Pb21iQE2UwGyri2FKADCC6Gys0YcOsTjmuG-IEOptApE77YWSCg2hkdWF0LWhvcGUwLjIuMGhkdWF0X2hvcIJpZHVhdF9jb3JlZTAuNi4w
+ [__cargo_doc2readme_dependencies_info]: ggGkYW0BYXSEG3foRquKx5scG8C5J9KGegetGzgLv6SF_cZyG5uY3D4-wulKYXKEG6Pb21iQE2UwGyri2FKADCC6Gys0YcOsTjmuG-IEOptApE77YWSCg2hkdWF0LWhvcGUwLjIuMGhkdWF0X2hvcIJpZHVhdF9jb3JlZTAuNi4w
  [__link0]: https://docs.rs/duat_core/0.6.0/duat_core/?search=mode::Mode
  [__link1]: https://github.com/smoka7/hop.nvim
  [__link2]: https://docs.rs/duat-hop/0.2.0/duat_hop/?search=Hopper::word
