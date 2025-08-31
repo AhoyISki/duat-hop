@@ -84,7 +84,7 @@ use duat_core::{prelude::*, text::Point};
 pub struct Hop;
 
 impl<U: Ui> Plugin<U> for Hop {
-    fn plug(self) {
+    fn plug(self, _: &Plugins<U>) {
         mode::map::<mode::User, U>("w", Hopper::word());
         mode::map::<mode::User, U>("l", Hopper::line());
 
