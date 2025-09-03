@@ -11,13 +11,13 @@
 //! `cargo add` in the config directory:
 //!
 //! ```bash
-//! cargo add duat-hop@"*" --rename hop
+//! cargo add duat-hop@"*"
 //! ```
 //!
 //! Or, if you are using a `--git-deps` version of duat, do this:
 //!
 //! ```bash
-//! cargo add --git https://github.com/AhoyISki/duat-hop --rename hop
+//! cargo add --git https://github.com/AhoyISki/duat-hop
 //! ```
 //!
 //! # Usage
@@ -26,14 +26,12 @@
 //! function:
 //!
 //! ```rust
-//! # use duat_core::doc_duat as duat;
-//! # use duat_hop as hop;
+//! # duat_core::doc_duat!(duat);
 //! setup_duat!(setup);
 //! use duat::prelude::*;
-//! use hop::*;
 //!
 //! fn setup() {
-//!     plug!(Hop);
+//!     plug(duat_hop::Hop);
 //! }
 //! ```
 //!
@@ -56,14 +54,12 @@
 //! Which you can modify via [`form::set`]:
 //!
 //! ```rust
-//! # use duat_core::doc_duat as duat;
-//! # use duat_hop as hop;
+//! # duat_core::doc_duat!(duat);
 //! setup_duat!(setup);
 //! use duat::prelude::*;
-//! use hop::*;
 //!
 //! fn setup() {
-//!     plug!(Hop);
+//!     plug(duat_hop::Hop);
 //!
 //!     form::set("hop.one_char", Form::red().underlined());
 //!     form::set("hop.char1", "hop.one_char");
@@ -81,6 +77,7 @@ use std::sync::LazyLock;
 use duat_core::{prelude::*, text::Point};
 
 /// The [`Plugin`] for the [`Hopper`] [`Mode`]
+#[derive(Default)]
 pub struct Hop;
 
 impl<U: Ui> Plugin<U> for Hop {

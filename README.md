@@ -15,13 +15,13 @@ Just like other Duat plugins, this one can be installed by calling
 `cargo add` in the config directory:
 
 ```bash
-cargo add duat-hop@"*" --rename hop
+cargo add duat-hop@"*"
 ```
 
 Or, if you are using a `--git-deps` version of duat, do this:
 
 ```bash
-cargo add --git https://github.com/AhoyISki/duat-hop --rename hop
+cargo add --git https://github.com/AhoyISki/duat-hop
 ```
 
 ## Usage
@@ -32,10 +32,9 @@ function:
 ```rust
 setup_duat!(setup);
 use duat::prelude::*;
-use hop::*;
 
 fn setup() {
-    plug!(Hop);
+    plug(duat_hop::Hop);
 }
 ```
 
@@ -60,10 +59,9 @@ Which you can modify via [`form::set`][__link8]:
 ```rust
 setup_duat!(setup);
 use duat::prelude::*;
-use hop::*;
 
 fn setup() {
-    plug!(Hop);
+    plug(duat_hop::Hop);
 
     form::set("hop.one_char", Form::red().underlined());
     form::set("hop.char1", "hop.one_char");
@@ -72,7 +70,7 @@ fn setup() {
 ```
 
 
- [__cargo_doc2readme_dependencies_info]: ggGkYW0BYXSEG3foRquKx5scG8C5J9KGegetGzgLv6SF_cZyG5uY3D4-wulKYXKEG6Pb21iQE2UwGyri2FKADCC6Gys0YcOsTjmuG-IEOptApE77YWSCg2hkdWF0LWhvcGUwLjIuMGhkdWF0X2hvcIJpZHVhdF9jb3JlZTAuNi4w
+ [__cargo_doc2readme_dependencies_info]: ggGkYW0BYXSEG3foRquKx5scG8C5J9KGegetGzgLv6SF_cZyG5uY3D4-wulKYXKEG8XenGaAZQn7GybKgb4d76jNG1MyrYenebjCG1tiiMsJqlE3YWSCg2hkdWF0LWhvcGUwLjIuMGhkdWF0X2hvcIJpZHVhdF9jb3JlZTAuNi4w
  [__link0]: https://docs.rs/duat_core/0.6.0/duat_core/?search=mode::Mode
  [__link1]: https://github.com/smoka7/hop.nvim
  [__link2]: https://docs.rs/duat-hop/0.2.0/duat_hop/?search=Hopper::word
