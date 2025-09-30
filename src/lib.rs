@@ -125,7 +125,7 @@ impl<U: Ui> Mode<U> for Hopper {
     fn on_switch(&mut self, pa: &mut Pass, handle: Handle<File<U>, U>) {
         let (file, area) = handle.write_with_area(pa);
 
-        let cfg = file.print_cfg();
+        let cfg = file.get_print_cfg();
         let text = file.text_mut();
 
         let id = form::id_of!("cloak");
