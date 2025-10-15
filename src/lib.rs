@@ -74,16 +74,16 @@
 //! [`form::set`]: duat_core::form::set
 use std::sync::LazyLock;
 
-use duat_core::{prelude::*, text::Point};
+use duat::{prelude::*, text::Point};
 
 /// The [`Plugin`] for the [`Hopper`] [`Mode`]
 #[derive(Default)]
 pub struct Hop;
 
-impl<U: Ui> Plugin<U> for Hop {
-    fn plug(self, _: &Plugins<U>) {
-        mode::map::<mode::User, U>("w", Hopper::word());
-        mode::map::<mode::User, U>("l", Hopper::line());
+impl Plugin for Hop {
+    fn plug(self, _: &Plugins) {
+        mode::map::<mode::User>("w", Hopper::word());
+        mode::map::<mode::User>("l", Hopper::line());
 
         form::set_weak("hop", "accent.info");
         form::set_weak("hop.char2", "hop.char1");
@@ -119,10 +119,10 @@ impl Hopper {
     }
 }
 
-impl<U: Ui> Mode<U> for Hopper {
-    type Widget = File<U>;
+impl Mode for Hopper {
+    type Widget = File;
 
-    fn on_switch(&mut self, pa: &mut Pass, handle: Handle<File<U>, U>) {
+    fn on_switch(&mut self, pa: &mut Pass, handle: Handle<File>) {
         let (file, area) = handle.write_with_area(pa);
 
         let cfg = file.get_print_cfg();
@@ -165,12 +165,12 @@ impl<U: Ui> Mode<U> for Hopper {
         }
     }
 
-    fn send_key(&mut self, pa: &mut Pass, key: KeyEvent, handle: Handle<File<U>, U>) {
+    fn send_key(&mut self, pa: &mut Pass, key: KeyEvent, handle: Handle<File>) {
         let char = match key {
             key!(KeyCode::Char(c)) => c,
             _ => {
                 context::error!("Invalid label input");
-                mode::reset::<File<U>, U>();
+                mode::reset::<File>();
                 return;
             }
         };
@@ -183,7 +183,7 @@ impl<U: Ui> Mode<U> for Hopper {
         for (seq, &[p0, p1]) in seqs.iter().zip(&self.points) {
             if *seq == self.seq {
                 handle.edit_main(pa, |mut e| e.move_to(p0..p1));
-                mode::reset::<File<U>, U>();
+                mode::reset::<File>();
             } else if seq.starts_with(&self.seq) {
                 continue;
             }
@@ -192,11 +192,11 @@ impl<U: Ui> Mode<U> for Hopper {
         }
 
         if self.seq.chars().count() == 2 || !LETTERS.contains(char) {
-            mode::reset::<File<U>, U>();
+            mode::reset::<File>();
         }
     }
 
-    fn before_exit(&mut self, pa: &mut Pass, handle: Handle<Self::Widget, U>) {
+    fn before_exit(&mut self, pa: &mut Pass, handle: Handle<Self::Widget>) {
         handle
             .write(pa)
             .text_mut()
