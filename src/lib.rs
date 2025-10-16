@@ -120,9 +120,9 @@ impl Hopper {
 }
 
 impl Mode for Hopper {
-    type Widget = File;
+    type Widget = Buffer;
 
-    fn on_switch(&mut self, pa: &mut Pass, handle: Handle<File>) {
+    fn on_switch(&mut self, pa: &mut Pass, handle: Handle<Buffer>) {
         let (file, area) = handle.write_with_area(pa);
 
         let cfg = file.get_print_cfg();
@@ -165,12 +165,12 @@ impl Mode for Hopper {
         }
     }
 
-    fn send_key(&mut self, pa: &mut Pass, key: KeyEvent, handle: Handle<File>) {
+    fn send_key(&mut self, pa: &mut Pass, key: KeyEvent, handle: Handle<Buffer>) {
         let char = match key {
             key!(KeyCode::Char(c)) => c,
             _ => {
                 context::error!("Invalid label input");
-                mode::reset::<File>();
+                mode::reset::<Buffer>();
                 return;
             }
         };
@@ -183,7 +183,7 @@ impl Mode for Hopper {
         for (seq, &[p0, p1]) in seqs.iter().zip(&self.points) {
             if *seq == self.seq {
                 handle.edit_main(pa, |mut e| e.move_to(p0..p1));
-                mode::reset::<File>();
+                mode::reset::<Buffer>();
             } else if seq.starts_with(&self.seq) {
                 continue;
             }
@@ -192,7 +192,7 @@ impl Mode for Hopper {
         }
 
         if self.seq.chars().count() == 2 || !LETTERS.contains(char) {
-            mode::reset::<File>();
+            mode::reset::<Buffer>();
         }
     }
 
