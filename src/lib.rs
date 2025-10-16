@@ -122,7 +122,7 @@ impl Hopper {
 impl Mode for Hopper {
     type Widget = Buffer;
 
-    fn on_switch(&mut self, pa: &mut Pass, handle: Handle<Buffer>) {
+    fn on_switch(&mut self, pa: &mut Pass, handle: Handle) {
         let (file, area) = handle.write_with_area(pa);
 
         let cfg = file.get_print_cfg();
@@ -165,7 +165,7 @@ impl Mode for Hopper {
         }
     }
 
-    fn send_key(&mut self, pa: &mut Pass, key: KeyEvent, handle: Handle<Buffer>) {
+    fn send_key(&mut self, pa: &mut Pass, key: KeyEvent, handle: Handle) {
         let char = match key {
             key!(KeyCode::Char(c)) => c,
             _ => {
