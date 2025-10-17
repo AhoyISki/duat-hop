@@ -125,14 +125,14 @@ impl Mode for Hopper {
     fn on_switch(&mut self, pa: &mut Pass, handle: Handle) {
         let (file, area) = handle.write_with_area(pa);
 
-        let cfg = file.get_print_cfg();
+        let opts = file.opts;
         let text = file.text_mut();
 
         let id = form::id_of!("cloak");
         text.insert_tag(*CLOAK_TAGGER, .., id.to_tag(101));
 
-        let (start, _) = area.start_points(text, cfg);
-        let (end, _) = area.end_points(text, cfg);
+        let (start, _) = area.start_points(text, opts);
+        let (end, _) = area.end_points(text, opts);
 
         self.points = text.search_fwd(self.regex, start..end).unwrap().collect();
 
