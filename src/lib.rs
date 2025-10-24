@@ -131,8 +131,8 @@ impl Mode for Hopper {
         let id = form::id_of!("cloak");
         text.insert_tag(*CLOAK_TAGGER, .., id.to_tag(101));
 
-        let (start, _) = area.start_points(text, opts);
-        let (end, _) = area.end_points(text, opts);
+        let start = area.start_points(text, opts).real;
+        let end = area.end_points(text, opts).real;
 
         self.points = text.search_fwd(self.regex, start..end).unwrap().collect();
 
