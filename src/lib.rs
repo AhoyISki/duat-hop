@@ -72,7 +72,7 @@
 //! [`User`]: duat_core::mode::User
 //! [`Form`]: duat_core::form::Form
 //! [`form::set`]: duat_core::form::set
-use std::sync::LazyLock;
+use std::{ops::Range, sync::LazyLock};
 
 use duat::{prelude::*, text::Point};
 
@@ -93,7 +93,7 @@ impl Plugin for Hop {
 #[derive(Clone)]
 pub struct Hopper {
     regex: &'static str,
-    points: Vec<[Point; 2]>,
+    points: Vec<Range<Point>>,
     seq: String,
 }
 
@@ -138,7 +138,7 @@ impl Mode for Hopper {
 
         let seqs = key_seqs(self.points.len());
 
-        for (seq, [p0, p1]) in seqs.iter().zip(&self.points) {
+        for (seq, r) in seqs.iter().zip(&self.points) {
             let ghost = if seq.len() == 1 {
                 Ghost(txt!("[hop.one_char:102]{seq}"))
             } else {
@@ -150,24 +150,24 @@ impl Mode for Hopper {
                 ))
             };
 
-            text.insert_tag(*TAGGER, *p0, ghost);
+            text.insert_tag(*TAGGER, r.start, ghost);
 
-            let seq_end = if p1.byte() == p0.byte() + 1
-                && let Some('\n') = text.char_at(*p1)
+            let seq_end = if r.end.byte() == r.start.byte() + 1
+                && let Some('\n') = text.char_at(r.end)
             {
-                p1.byte()
+                r.end.byte()
             } else {
-                let chars = text.strs(*p0..).unwrap().chars().map(|c| c.len_utf8());
-                p0.byte() + chars.take(seq.len()).sum::<usize>()
+                let chars = text.strs(r.start..).unwrap().chars().map(|c| c.len_utf8());
+                r.start.byte() + chars.take(seq.len()).sum::<usize>()
             };
 
-            text.insert_tag(*TAGGER, p0.byte()..seq_end, Conceal);
+            text.insert_tag(*TAGGER, r.start.byte()..seq_end, Conceal);
         }
     }
 
-    fn send_key(&mut self, pa: &mut Pass, key: KeyEvent, handle: Handle) {
-        let char = match key {
-            key!(KeyCode::Char(c)) => c,
+    fn send_key(&mut self, pa: &mut Pass, key_event: KeyEvent, handle: Handle) {
+        let char = match key_event {
+            event!(KeyCode::Char(c)) => c,
             _ => {
                 context::error!("Invalid label input");
                 mode::reset::<Buffer>();
@@ -180,15 +180,15 @@ impl Mode for Hopper {
         handle.write(pa).selections_mut().remove_extras();
 
         let seqs = key_seqs(self.points.len());
-        for (seq, &[p0, p1]) in seqs.iter().zip(&self.points) {
+        for (seq, r) in seqs.iter().zip(&self.points) {
             if *seq == self.seq {
-                handle.edit_main(pa, |mut e| e.move_to(p0..p1));
+                handle.edit_main(pa, |mut e| e.move_to(r.clone()));
                 mode::reset::<Buffer>();
             } else if seq.starts_with(&self.seq) {
                 continue;
             }
             // Removing one end of the conceal range will remove both ends.
-            handle.write(pa).text_mut().remove_tags(*TAGGER, p0.byte());
+            handle.write(pa).text_mut().remove_tags(*TAGGER, r.start.byte());
         }
 
         if self.seq.chars().count() == 2 || !LETTERS.contains(char) {
