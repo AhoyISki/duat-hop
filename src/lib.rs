@@ -74,7 +74,7 @@
 //! [`form::set`]: duat_core::form::set
 use std::{ops::Range, sync::LazyLock};
 
-use duat::{prelude::*, text::Point};
+use duat::prelude::*;
 
 /// The [`Plugin`] for the [`Hopper`] [`Mode`]
 #[derive(Default)]
@@ -93,7 +93,7 @@ impl Plugin for Hop {
 #[derive(Clone)]
 pub struct Hopper {
     regex: &'static str,
-    points: Vec<Range<Point>>,
+    ranges: Vec<Range<usize>>,
     seq: String,
 }
 
@@ -103,7 +103,7 @@ impl Hopper {
     pub fn word() -> Self {
         Self {
             regex: "[^\n\\s]+",
-            points: Vec::new(),
+            ranges: Vec::new(),
             seq: String::new(),
         }
     }
@@ -134,11 +134,11 @@ impl Mode for Hopper {
         let start = area.start_points(text, opts).real;
         let end = area.end_points(text, opts).real;
 
-        self.points = text.search_fwd(self.regex, start..end).unwrap().collect();
+        self.ranges = text.search_fwd(self.regex, start..end).unwrap().collect();
 
-        let seqs = key_seqs(self.points.len());
+        let seqs = key_seqs(self.ranges.len());
 
-        for (seq, r) in seqs.iter().zip(&self.points) {
+        for (seq, r) in seqs.iter().zip(&self.ranges) {
             let ghost = if seq.len() == 1 {
                 Ghost(txt!("[hop.one_char:102]{seq}"))
             } else {
@@ -152,16 +152,16 @@ impl Mode for Hopper {
 
             text.insert_tag(*TAGGER, r.start, ghost);
 
-            let seq_end = if r.end.byte() == r.start.byte() + 1
+            let seq_end = if r.end == r.start + 1
                 && let Some('\n') = text.char_at(r.end)
             {
-                r.end.byte()
+                r.end
             } else {
                 let chars = text.strs(r.start..).unwrap().chars().map(|c| c.len_utf8());
-                r.start.byte() + chars.take(seq.len()).sum::<usize>()
+                r.start + chars.take(seq.len()).sum::<usize>()
             };
 
-            text.insert_tag(*TAGGER, r.start.byte()..seq_end, Conceal);
+            text.insert_tag(*TAGGER, r.start..seq_end, Conceal);
         }
     }
 
@@ -179,8 +179,8 @@ impl Mode for Hopper {
 
         handle.write(pa).selections_mut().remove_extras();
 
-        let seqs = key_seqs(self.points.len());
-        for (seq, r) in seqs.iter().zip(&self.points) {
+        let seqs = key_seqs(self.ranges.len());
+        for (seq, r) in seqs.iter().zip(&self.ranges) {
             if *seq == self.seq {
                 handle.edit_main(pa, |mut e| e.move_to(r.clone()));
                 mode::reset::<Buffer>();
@@ -188,7 +188,7 @@ impl Mode for Hopper {
                 continue;
             }
             // Removing one end of the conceal range will remove both ends.
-            handle.write(pa).text_mut().remove_tags(*TAGGER, r.start.byte());
+            handle.write(pa).text_mut().remove_tags(*TAGGER, r.start);
         }
 
         if self.seq.chars().count() == 2 || !LETTERS.contains(char) {
