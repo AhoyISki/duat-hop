@@ -26,7 +26,6 @@
 //! function:
 //!
 //! ```rust
-//! # duat_core::doc_duat!(duat);
 //! setup_duat!(setup);
 //! use duat::prelude::*;
 //!
@@ -54,7 +53,6 @@
 //! Which you can modify via [`form::set`]:
 //!
 //! ```rust
-//! # duat_core::doc_duat!(duat);
 //! setup_duat!(setup);
 //! use duat::prelude::*;
 //!
