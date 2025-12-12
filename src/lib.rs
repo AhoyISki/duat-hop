@@ -80,8 +80,12 @@ pub struct Hop;
 
 impl Plugin for Hop {
     fn plug(self, _: &Plugins) {
-        mode::map::<mode::User>("w", Hopper::word());
-        mode::map::<mode::User>("l", Hopper::line());
+        mode::map::<mode::User>("w", Hopper::word()).doc(txt!("[mode]Hop[] to a [a]word"));
+        mode::map::<mode::User>("l", Hopper::line()).doc(txt!("[mode]Hop[] to a [a]line"));
+
+        opts::set_which_key(|opts| {
+            opts.always_show::<Hopper>();
+        });
 
         form::set_weak("hop", "accent.info");
         form::set_weak("hop.char2", "hop.char1");
@@ -120,6 +124,12 @@ impl Hopper {
 impl Mode for Hopper {
     type Widget = Buffer;
 
+    fn bindings() -> mode::Bindings {
+        mode::bindings!(match _ {
+            event!(KeyCode::Char(..)) => txt!("Filter hopping entries"),
+        })
+    }
+
     fn on_switch(&mut self, pa: &mut Pass, handle: Handle) {
         let (file, area) = handle.write_with_area(pa);
 
@@ -132,16 +142,16 @@ impl Mode for Hopper {
         let start = area.start_points(text, opts).real;
         let end = area.end_points(text, opts).real;
 
-        self.ranges = text.search_fwd(self.regex, start..end).unwrap().collect();
+        self.ranges = text.search(self.regex).range(start..end).collect();
 
         let seqs = key_seqs(self.ranges.len());
 
         for (seq, r) in seqs.iter().zip(&self.ranges) {
             let ghost = if seq.len() == 1 {
-                Ghost(txt!("[hop.one_char:102]{seq}"))
+                Ghost::new(txt!("[hop.one_char:102]{seq}"))
             } else {
                 let mut chars = seq.chars();
-                Ghost(txt!(
+                Ghost::new(txt!(
                     "[hop.char1:102]{}[hop.char2:102]{}",
                     chars.next().unwrap(),
                     chars.next().unwrap()
@@ -168,7 +178,7 @@ impl Mode for Hopper {
             event!(KeyCode::Char(c)) => c,
             _ => {
                 context::error!("Invalid label input");
-                mode::reset::<Buffer>();
+                mode::reset::<Buffer>(pa);
                 return;
             }
         };
@@ -181,7 +191,7 @@ impl Mode for Hopper {
         for (seq, r) in seqs.iter().zip(&self.ranges) {
             if *seq == self.seq {
                 handle.edit_main(pa, |mut e| e.move_to(r.clone()));
-                mode::reset::<Buffer>();
+                mode::reset::<Buffer>(pa);
             } else if seq.starts_with(&self.seq) {
                 continue;
             }
@@ -190,7 +200,7 @@ impl Mode for Hopper {
         }
 
         if self.seq.chars().count() == 2 || !LETTERS.contains(char) {
-            mode::reset::<Buffer>();
+            mode::reset::<Buffer>(pa);
         }
     }
 
