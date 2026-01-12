@@ -65,11 +65,11 @@
 //! }
 //! ```
 //!
-//! [`Mode`]: duat_core::mode::Mode
+//! [`Mode`]: duat::mode::Mode
 //! [`hop.nvim`]: https://github.com/smoka7/hop.nvim
-//! [`User`]: duat_core::mode::User
-//! [`Form`]: duat_core::form::Form
-//! [`form::set`]: duat_core::form::set
+//! [`User`]: duat::mode::User
+//! [`Form`]: duat::form::Form
+//! [`form::set`]: duat::form::set
 use std::{ops::Range, sync::LazyLock};
 
 use duat::prelude::*;
