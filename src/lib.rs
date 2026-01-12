@@ -83,9 +83,7 @@ impl Plugin for Hop {
         mode::map::<mode::User>("w", Hopper::word()).doc(txt!("[mode]Hop[] to a [a]word"));
         mode::map::<mode::User>("l", Hopper::line()).doc(txt!("[mode]Hop[] to a [a]line"));
 
-        opts::set_which_key(|opts| {
-            opts.always_show::<Hopper>();
-        });
+        opts::set(|opts| opts.whichkey.always_show::<Hopper>());
 
         form::set_weak("hop", "accent.info");
         form::set_weak("hop.char2", "hop.char1");
