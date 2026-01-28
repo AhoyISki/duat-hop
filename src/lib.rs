@@ -131,7 +131,7 @@ impl Mode for Hopper {
     fn on_switch(&mut self, pa: &mut Pass, handle: Handle) {
         let (buffer, area) = handle.write_with_area(pa);
 
-        let opts = buffer.opts;
+        let opts = buffer.print_opts();
         let mut text = buffer.text_mut();
 
         let id = form::id_of!("cloak");
@@ -203,10 +203,9 @@ impl Mode for Hopper {
     }
 
     fn before_exit(&mut self, pa: &mut Pass, handle: Handle<Self::Widget>) {
-        handle
-            .write(pa)
-            .text_mut()
-            .remove_tags([*TAGGER, *CLOAK_TAGGER], ..)
+        let mut text = handle.text_mut(pa);
+        text.remove_tags(*TAGGER, ..);
+        text.remove_tags(*CLOAK_TAGGER, ..);
     }
 }
 
