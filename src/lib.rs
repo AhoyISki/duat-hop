@@ -163,7 +163,7 @@ impl Mode for Hopper {
             {
                 r.end
             } else {
-                let chars = text.strs(r.start..).unwrap().chars().map(|c| c.len_utf8());
+                let chars = text[r.start..].chars().map(|c| c.len_utf8());
                 r.start + chars.take(seq.len()).sum::<usize>()
             };
 
