@@ -85,8 +85,8 @@ impl Plugin for Hop {
 
         opts::set(|opts| opts.whichkey.always_show::<Hopper>());
 
-        form::set_weak("hop", "accent.info");
-        form::set_weak("hop.char2", "hop.char1");
+        form::set_weak("hop", Form::mimic("accent.info"));
+        form::set_weak("hop.char2", Form::mimic("hop.char1"));
     }
 }
 
