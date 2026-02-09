@@ -1,4 +1,4 @@
-# duat-hop ![License: AGPL-3.0-or-later](https://img.shields.io/badge/license-AGPL--3.0--or--later-blue) [![duat-hop on crates.io](https://img.shields.io/crates/v/duat-hop)](https://crates.io/crates/duat-hop) [![duat-hop on docs.rs](https://docs.rs/duat-hop/badge.svg)](https://docs.rs/duat-hop) [![Source Code Repository](https://img.shields.io/badge/Code-On%20GitHub-blue?logo=GitHub)](https://github.com/AhoyISki/duat-hop)
+# duat-hop ![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue) [![duat-hop on crates.io](https://img.shields.io/crates/v/duat-hop)](https://crates.io/crates/duat-hop) [![duat-hop on docs.rs](https://docs.rs/duat-hop/badge.svg)](https://docs.rs/duat-hop) [![Source Code Repository](https://img.shields.io/badge/Code-On%20GitHub-blue?logo=GitHub)](https://github.com/AhoyISki/duat-hop)
 
 ![](./assets/hop-demo.gif)
 
@@ -63,20 +63,20 @@ use duat::prelude::*;
 fn setup() {
     plug(duat_hop::Hop);
 
-    form::set("hop.one_char", Form::red().underlined());
-    form::set("hop.char1", "hop.one_char");
-    form::set("hop.char2", "search");
+    form::set("hop.one_char", Form::new().red().underlined());
+    form::set("hop.char1", Form::mimic("hop.one_char"));
+    form::set("hop.char2", Form::mimic("search"));
 }
 ```
 
 
- [__cargo_doc2readme_dependencies_info]: ggGkYW0BYXSEG3foRquKx5scG8C5J9KGegetGzgLv6SF_cZyG5uY3D4-wulKYXKEG8XenGaAZQn7GybKgb4d76jNG1MyrYenebjCG1tiiMsJqlE3YWSCg2hkdWF0LWhvcGUwLjIuMGhkdWF0X2hvcIJpZHVhdF9jb3JlZTAuNi4w
- [__link0]: https://docs.rs/duat_core/0.6.0/duat_core/?search=mode::Mode
+ [__cargo_doc2readme_dependencies_info]: ggGkYW0BYXSEG3foRquKx5scG8C5J9KGegetGzgLv6SF_cZyG5uY3D4-wulKYXKEGzldXkre1TcnG0XSdiXIsA8kG2GlwOVvKBSeG-sQxhSA_8-TYWSCgmRkdWF0ZTAuOC4zg2hkdWF0LWhvcGUwLjIuMmhkdWF0X2hvcA
+ [__link0]: https://docs.rs/duat/0.8.3/duat/?search=mode::Mode
  [__link1]: https://github.com/smoka7/hop.nvim
- [__link2]: https://docs.rs/duat-hop/0.2.0/duat_hop/?search=Hopper::word
- [__link3]: https://docs.rs/duat_core/0.6.0/duat_core/?search=mode::User
- [__link4]: https://docs.rs/duat-hop/0.2.0/duat_hop/?search=Hopper::line
- [__link5]: https://docs.rs/duat-hop/0.2.0/duat_hop/struct.Hop.html
- [__link6]: https://docs.rs/duat_core/0.6.0/duat_core/?search=form::Form
- [__link7]: https://docs.rs/duat_core/0.6.0/duat_core/?search=form::Form
- [__link8]: https://docs.rs/duat_core/0.6.0/duat_core/?search=form::set
+ [__link2]: https://docs.rs/duat-hop/0.2.2/duat_hop/?search=Hopper::word
+ [__link3]: https://docs.rs/duat/0.8.3/duat/?search=mode::User
+ [__link4]: https://docs.rs/duat-hop/0.2.2/duat_hop/?search=Hopper::line
+ [__link5]: https://docs.rs/duat-hop/0.2.2/duat_hop/struct.Hop.html
+ [__link6]: https://docs.rs/duat/0.8.3/duat/?search=form::Form
+ [__link7]: https://docs.rs/duat/0.8.3/duat/?search=form::Form
+ [__link8]: https://docs.rs/duat/0.8.3/duat/?search=form::set

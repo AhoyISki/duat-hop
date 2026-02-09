@@ -59,9 +59,9 @@
 //! fn setup() {
 //!     plug(duat_hop::Hop);
 //!
-//!     form::set("hop.one_char", Form::red().underlined());
-//!     form::set("hop.char1", "hop.one_char");
-//!     form::set("hop.char2", "search");
+//!     form::set("hop.one_char", Form::new().red().underlined());
+//!     form::set("hop.char1", Form::mimic("hop.one_char"));
+//!     form::set("hop.char2", Form::mimic("search"));
 //! }
 //! ```
 //!
