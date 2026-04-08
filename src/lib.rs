@@ -113,10 +113,10 @@ impl Plugin for Hop {
 
                 for (seq, r) in seqs.iter().zip(&hop.ranges) {
                     let ghost = if seq.len() == 1 {
-                        Ghost::overlay(txt!("[hop.one_char:240]{seq}"))
+                        Overlay::new(txt!("[hop.one_char:240]{seq}"))
                     } else {
                         let mut chars = seq.chars();
-                        Ghost::overlay(txt!(
+                        Overlay::new(txt!(
                             "[hop.char1:240]{}[hop.char2:240]{}",
                             chars.next().unwrap(),
                             chars.next().unwrap()
