@@ -1,5 +1,5 @@
 //! A duat [`Mode`] to quickly move around the screen, inspired by
-//! [`hop.nvim`]
+//! [`hop.nvim`].
 //!
 //! This plugin will highlight every word (or line, or a custom regex)
 //! in the screen, and let you jump to it with at most 2 keypresses,
@@ -72,21 +72,67 @@
 //! [`form::set`]: duat::form::set
 use std::{ops::Range, sync::LazyLock};
 
-use duat::prelude::*;
+use duat::{Plugin, Plugins, prelude::*};
 
-/// The [`Plugin`] for the [`Hopper`] [`Mode`]
+/// The [`Plugin`] for the [`Hopper`] [`Mode`].
 #[derive(Default)]
 pub struct Hop;
 
 impl Plugin for Hop {
-    fn plug(self, _: &Plugins) {
-        mode::map::<mode::User>("w", Hopper::word()).doc(txt!("[mode]Hop[] to a [a]word"));
-        mode::map::<mode::User>("l", Hopper::line()).doc(txt!("[mode]Hop[] to a [a]line"));
+    fn plug(self, opts: &mut Opts, _: &Plugins) {
+        mode::map::<mode::User>("w", |pa: &mut Pass| mode::set(pa, Hopper::word()))
+            .doc(txt!("[mode]Hop[] to a [a]word"));
+        mode::map::<mode::User>("l", |pa: &mut Pass| mode::set(pa, Hopper::line()))
+            .doc(txt!("[mode]Hop[] to a [a]line"));
 
-        opts::set(|opts| opts.whichkey.always_show::<Hopper>());
+        opts.whichkey.always_show::<Hopper>();
 
         form::set_weak("hop", Form::mimic("accent.info"));
         form::set_weak("hop.char2", Form::mimic("hop.char1"));
+
+        let cloak_ns = Ns::new();
+
+        hook::add::<ModeSwitched>(move |pa, mut switch| {
+            if let Some(hop) = switch.new.get_as::<Hopper>() {
+                let buffer = context::current_buffer(pa);
+
+                let (buf, area) = buffer.write_with_area(pa);
+
+                let opts = buf.print_opts();
+                let mut text = buf.text_mut();
+
+                let id = form::id_of!("cloak");
+                text.insert_tag(cloak_ns, .., id.to_tag(101));
+
+                let start = area.start_points(&text, opts).real;
+                let end = area.end_points(&text, opts).real;
+
+                hop.ranges = text.search(hop.regex).range(start..end).collect();
+
+                let seqs = key_seqs(hop.ranges.len());
+
+                for (seq, r) in seqs.iter().zip(&hop.ranges) {
+                    let ghost = if seq.len() == 1 {
+                        Ghost::overlay(txt!("[hop.one_char:102]{seq}"))
+                    } else {
+                        let mut chars = seq.chars();
+                        Ghost::overlay(txt!(
+                            "[hop.char1:102]{}[hop.char2:102]{}",
+                            chars.next().unwrap(),
+                            chars.next().unwrap()
+                        ))
+                    };
+
+                    text.insert_tag(*NS, r.start, ghost);
+                }
+            } else if switch.old.is::<Hopper>() {
+                let buffer = context::current_buffer(pa);
+
+                let mut text = buffer.text_mut(pa);
+                text.remove_tags(*NS, ..);
+                text.remove_tags(cloak_ns, ..);
+            }
+        });
     }
 }
 
@@ -128,49 +174,6 @@ impl Mode for Hopper {
         })
     }
 
-    fn on_switch(&mut self, pa: &mut Pass, handle: Handle) {
-        let (buffer, area) = handle.write_with_area(pa);
-
-        let opts = buffer.print_opts();
-        let mut text = buffer.text_mut();
-
-        let id = form::id_of!("cloak");
-        text.insert_tag(*CLOAK_TAGGER, .., id.to_tag(101));
-
-        let start = area.start_points(&text, opts).real;
-        let end = area.end_points(&text, opts).real;
-
-        self.ranges = text.search(self.regex).range(start..end).collect();
-
-        let seqs = key_seqs(self.ranges.len());
-
-        for (seq, r) in seqs.iter().zip(&self.ranges) {
-            let ghost = if seq.len() == 1 {
-                Ghost::new(txt!("[hop.one_char:102]{seq}"))
-            } else {
-                let mut chars = seq.chars();
-                Ghost::new(txt!(
-                    "[hop.char1:102]{}[hop.char2:102]{}",
-                    chars.next().unwrap(),
-                    chars.next().unwrap()
-                ))
-            };
-
-            text.insert_tag(*TAGGER, r.start, ghost);
-
-            let seq_end = if r.end == r.start + 1
-                && let Some('\n') = text.char_at(r.end)
-            {
-                r.end
-            } else {
-                let chars = text[r.start..].chars().map(|c| c.len_utf8());
-                r.start + chars.take(seq.len()).sum::<usize>()
-            };
-
-            text.insert_tag(*TAGGER, r.start..seq_end, Conceal);
-        }
-    }
-
     fn send_key(&mut self, pa: &mut Pass, key_event: KeyEvent, handle: Handle) {
         let char = match key_event {
             event!(KeyCode::Char(c)) => c,
@@ -194,18 +197,12 @@ impl Mode for Hopper {
                 continue;
             }
             // Removing one end of the conceal range will remove both ends.
-            handle.write(pa).text_mut().remove_tags(*TAGGER, r.start);
+            handle.write(pa).text_mut().remove_tags(*NS, r.start);
         }
 
         if self.seq.chars().count() == 2 || !LETTERS.contains(char) {
             mode::reset::<Buffer>(pa);
         }
-    }
-
-    fn before_exit(&mut self, pa: &mut Pass, handle: Handle<Self::Widget>) {
-        let mut text = handle.text_mut(pa);
-        text.remove_tags(*TAGGER, ..);
-        text.remove_tags(*CLOAK_TAGGER, ..);
     }
 }
 
@@ -221,5 +218,4 @@ fn key_seqs(len: usize) -> Vec<String> {
 }
 
 static LETTERS: &str = "abcdefghijklmnopqrstuvwxyz";
-static TAGGER: LazyLock<Tagger> = Tagger::new_static();
-static CLOAK_TAGGER: LazyLock<Tagger> = Tagger::new_static();
+static NS: LazyLock<Ns> = Ns::new_lazy();
