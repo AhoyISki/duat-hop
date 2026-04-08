@@ -102,7 +102,7 @@ impl Plugin for Hop {
                 let mut text = buf.text_mut();
 
                 let id = form::id_of!("cloak");
-                text.insert_tag(cloak_ns, .., id.to_tag(101));
+                text.insert_tag(cloak_ns, .., id.to_tag(239));
 
                 let start = area.start_points(&text, opts).real;
                 let end = area.end_points(&text, opts).real;
@@ -113,11 +113,11 @@ impl Plugin for Hop {
 
                 for (seq, r) in seqs.iter().zip(&hop.ranges) {
                     let ghost = if seq.len() == 1 {
-                        Ghost::overlay(txt!("[hop.one_char:102]{seq}"))
+                        Ghost::overlay(txt!("[hop.one_char:240]{seq}"))
                     } else {
                         let mut chars = seq.chars();
                         Ghost::overlay(txt!(
-                            "[hop.char1:102]{}[hop.char2:102]{}",
+                            "[hop.char1:240]{}[hop.char2:240]{}",
                             chars.next().unwrap(),
                             chars.next().unwrap()
                         ))
