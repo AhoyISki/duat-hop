@@ -166,15 +166,13 @@ impl Hopper {
 }
 
 impl Mode for Hopper {
-    type Widget = Buffer;
-
     fn bindings() -> mode::Bindings {
         mode::bindings!(match _ {
             event!(KeyCode::Char(..)) => txt!("Filter hopping entries"),
         })
     }
 
-    fn send_key(&mut self, pa: &mut Pass, key_event: KeyEvent, handle: Handle) {
+    fn send_key(&mut self, pa: &mut Pass, key_event: KeyEvent) {
         let char = match key_event {
             event!(KeyCode::Char(c)) => c,
             _ => {
@@ -184,20 +182,22 @@ impl Mode for Hopper {
             }
         };
 
+        let buffer = context::current_buffer(pa);
+
         self.seq.push(char);
 
-        handle.write(pa).selections_mut().remove_extras();
+        buffer.write(pa).remove_extra_selections();
 
         let seqs = key_seqs(self.ranges.len());
         for (seq, r) in seqs.iter().zip(&self.ranges) {
             if *seq == self.seq {
-                handle.edit_main(pa, |mut e| e.move_to(r.clone()));
+                buffer.edit_main(pa, |mut e| e.move_to(r.clone()));
                 mode::reset::<Buffer>(pa);
             } else if seq.starts_with(&self.seq) {
                 continue;
             }
             // Removing one end of the conceal range will remove both ends.
-            handle.write(pa).text_mut().remove_tags(*NS, r.start);
+            buffer.write(pa).text_mut().remove_tags(*NS, r.start);
         }
 
         if self.seq.chars().count() == 2 || !LETTERS.contains(char) {
