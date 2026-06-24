@@ -168,13 +168,13 @@ impl Hopper {
 impl Mode for Hopper {
     fn bindings() -> mode::Bindings {
         mode::bindings!(match _ {
-            event!(KeyCode::Char(..)) => txt!("Filter hopping entries"),
+            unmod!(KeyCode::Char(..)) => txt!("Filter hopping entries"),
         })
     }
 
     fn send_key(&mut self, pa: &mut Pass, key_event: KeyEvent) {
         let char = match key_event {
-            event!(KeyCode::Char(c)) => c,
+            unmod!(KeyCode::Char(c)) => c,
             _ => {
                 context::error!("Invalid label input");
                 mode::reset::<Buffer>(pa);
